@@ -1,0 +1,5 @@
+[style]
+column_limit = 140
+based_on_style = pep8
+split_before_first_argument = true
+join_multiple_lines = true
