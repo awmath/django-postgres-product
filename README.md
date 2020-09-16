@@ -1,4 +1,5 @@
 ![CI/CD Workflow](https://github.com/awmath/django-postgres-product/workflows/test%20and%20packaging/badge.svg)
+[![codecov](https://codecov.io/gh/awmath/django-postgres-product/branch/master/graph/badge.svg)](https://codecov.io/gh/awmath/django-postgres-product)
 
 # django-postgres-product
 
