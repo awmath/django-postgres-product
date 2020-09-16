@@ -27,10 +27,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install . coverage
       - name: Run tests
         run: |
-          python ./runtests.py
+          coverage run --source postgres_product runtests.py
+          coverage report
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+
   deploy:
     # only deploy for tags starting with v
     if: startsWith(github.ref, 'refs/tags/v')
