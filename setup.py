@@ -15,9 +15,7 @@ setup(
     # Name of the package
     name='django-postgres-product',
     # Packages to include into the distribution
-    packages=[
-        'postgres_product',
-    ],
+    packages=find_packages('.', exclude=['tests']),
     # Start with a small number and increase it with
     # every change you make https://semver.org
     version='1.0',
