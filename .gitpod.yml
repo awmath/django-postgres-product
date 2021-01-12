@@ -1,4 +1,4 @@
 tasks:
-  - init: sudo docker-up
-    command: bash run-postgres.sh
+  - command: sudo docker-up
+  - command: bash run-postgres.sh
   - command: pip install django psycopg2
