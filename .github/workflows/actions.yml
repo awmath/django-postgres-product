@@ -3,10 +3,13 @@ on: [push]
 
 jobs:
   test:
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+        django-version: ["3.2", "4.0"]
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: python:3
-    # Service containers to run with `container-job`
+
     services:
       # Label used to access the service container
       postgres:
@@ -25,16 +28,55 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        env:
+          DJANGO: ${{ matrix.django-version }}
+        run: |
+          pip install -r requirements.txt
+          pip install django==DJANGO
+      - name: Run tests
+        run: pytest
+
+  test-coverage:
+    runs-on: ubuntu-latest
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the user and password for postgres
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3
       - name: Install dependencies
         run: |
-          pip install . coverage
+          pip install -r requirements.txt
       - name: Run tests
         run: |
-          coverage run --source postgres_product runtests.py
-          coverage report
-      - uses: codecov/codecov-action@v1
+          pytest --cov --cov-report=xml --cov-report term
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   deploy:
     # only deploy for tags starting with v
@@ -45,15 +87,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.x"
+          python-version: 3
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel twine
       - name: Build and publish
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           python setup.py sdist bdist_wheel
           twine upload dist/*
