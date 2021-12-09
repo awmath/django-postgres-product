@@ -1,0 +1,17 @@
+---
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: |
+      pip install -r requirements.txt
+      pip install pre-commit
+      PIP_USER=no pre-commit install --install-hooks
+  # run database
+  - command: |
+      docker run --rm -it -p 5432:5432 \
+      -e POSTGRES_PASSWORD=test -e POSTGRES_USER=test --name postgres postgres
+vscode:
+  extensions:
+    - ms-python.python
+    - vscode.markdown
