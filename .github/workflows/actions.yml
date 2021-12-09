@@ -3,12 +3,15 @@ on: [push]
 
 jobs:
   test:
-    # strategy:
-    #   max-parallel: 1
-    #   matrix:
-    #     python-version: ["3.8", "3.9", "3.10"]
-    #     django-version: ["3.2", "4.0"]
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+        django-version: ["3.2", "4.0"]
     runs-on: ubuntu-latest
+
+    container:
+      image: python:${{ matrix.python-version }}
 
     services:
       # Label used to access the service container
@@ -31,12 +34,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          # python-version: ${{ matrix.python-version }}
-          python-version: "3"
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         env:
-          DJANGO: "3.2"
-          # DJANGO: ${{ matrix.django-version }}
+          DJANGO: ${{ matrix.django-version }}
         run: |
           pip install -r requirements.txt
           pip install django==${DJANGO}
@@ -46,6 +47,9 @@ jobs:
   test-coverage:
     needs: test
     runs-on: ubuntu-latest
+
+    container:
+      image: python
 
     services:
       # Label used to access the service container
