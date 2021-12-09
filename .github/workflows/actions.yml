@@ -37,11 +37,12 @@ jobs:
           DJANGO: ${{ matrix.django-version }}
         run: |
           pip install -r requirements.txt
-          pip install django==DJANGO
+          pip install django==${DJANGO}
       - name: Run tests
         run: pytest
 
   test-coverage:
+    needs: test
     runs-on: ubuntu-latest
 
     services:
