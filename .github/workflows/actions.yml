@@ -3,11 +3,11 @@ on: [push]
 
 jobs:
   test:
-    strategy:
-      max-parallel: 2
-      matrix:
-        python-version: ["3.8", "3.9", "3.10"]
-        django-version: ["3.2", "4.0"]
+    # strategy:
+    #   max-parallel: 1
+    #   matrix:
+    #     python-version: ["3.8", "3.9", "3.10"]
+    #     django-version: ["3.2", "4.0"]
     runs-on: ubuntu-latest
 
     services:
@@ -31,10 +31,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          # python-version: ${{ matrix.python-version }}
+          python-version: "3"
       - name: Install dependencies
         env:
-          DJANGO: ${{ matrix.django-version }}
+          DJANGO: "3.2"
+          # DJANGO: ${{ matrix.django-version }}
         run: |
           pip install -r requirements.txt
           pip install django==${DJANGO}
